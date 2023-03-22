@@ -47,7 +47,7 @@ templates_dict = {
         ('0', "ffmpeg -i $$$input$$$ -c copy -an $$$output$$$")
     ]),
     "filter" : OrderedDict([
-        ('0', "ffmpeg -i $$$input$$$"),
+        ('0', "ffmpeg -i $$$input$$$ -crf $$$crf$$$"),
         ('fade', "-vf fade=t=in:st=0:d=$$$fade-length$$$,fade=t=out:st=$$$fade-offset$$$:d=$$$fade-length$$$"),
         ('afade', "-af afade=t=in:st=0:d=$$$fade-length$$$,afade=t=out:st=$$$fade-offset$$$:d=$$$fade-length$$$"),
         ('1', "$$$output$$$")
@@ -218,7 +218,8 @@ def cmd_filter(summary, cmds, in_file):
             'fade-length' : summary['Fade'],
             'fade-offset' : str(((estimate_length(summary) + constants["ffmpeg"]["tune-fade-offset"]) / 1000) - float(summary['Fade'])),
             'input' : quote(in_file),
-            'output' : quote(out_file)
+            'output' : quote(out_file),
+            'crf' : summary["CRF"] if summary.get('CRF') != None else constants["ffmpeg"]["def-crf"]
         }
         cmds.append(create_cmd('filter', to_replace, to_del))
     else:
@@ -273,11 +274,11 @@ def default_opts(summary):
         summary['Width'] = constants["ffmpeg"]["def-width"]
         summary['Height'] = None
 
-# Function: Empty temporary directory.
+# API: Empty temporary directory.
 def clean_tmp_dir():
     for f in os.listdir(tmp_dir):
-        print(f)
-    input()
+        del_f = os.path.join(tmp_dir, f)
+        os.remove(del_f)
 
 # API: Options to commands.
 def options_to_cmds(summary):

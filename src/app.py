@@ -1,5 +1,5 @@
 
-import sys
+import sys, os
 
 import cmdln
 
@@ -10,6 +10,7 @@ from cc_assets import assets
 from cc_constants import constants
 from util import video_exists, txt_from_file
 from util_qt import asset_path
+import ffmpeg
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
@@ -48,6 +49,9 @@ class MainWindow(QMainWindow):
         self.setFocus()
 
     def closeEvent(self, event):
+        ffmpeg.clean_tmp_dir()
+        with open(os.path.join(ffmpeg.tmp_dir, 'tmp.txt'), 'w') as f:
+            f.write('Damn, git!')
         raise KeyboardInterrupt()    # Note: To kill all threads.
     
     def keyPressEvent(self, e):
