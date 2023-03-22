@@ -13,8 +13,7 @@ constants = {
         "def-crf" : "17",
         "def-ext" : "mp4",
         "def-fade" : "0",
-        "def-playback" : "0.8",
-        "def-fps" : "20",
+        "def-playback" : "1",
         "def-width" : "800",
         "tune-fade-offset" : 0,
         "tune-keyframe-start" : 0

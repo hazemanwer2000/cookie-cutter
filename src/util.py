@@ -129,5 +129,11 @@ def has_audio(f):
     info = MediaInfo.parse(f)
     return any([track.track_type == 'Audio' for track in info.tracks])
 
+# API: Check if video has audio stream.
+def get_fps(f):
+    info = MediaInfo.parse(f)
+    track = [track for track in info.tracks if track.track_type == 'Video'][0]
+    return track.frame_rate
+
 if __name__ == '__main__':
-    print(iter_name("C:/Users/hazem/Desktop/outx.mkv", suffix=' - CC'))
+    print(get_fps("C:/Users/hazem/Desktop/cure-for-wellness.mkv"))

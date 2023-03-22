@@ -4,7 +4,7 @@ from collections import OrderedDict
 from cc_assets import assets
 from cc_constants import constants
 from util_qt import asset_path
-from util import extension, video_length, iter_name
+from util import extension, video_length, iter_name, get_fps
 from pprint import pprint
 
 import os
@@ -233,8 +233,8 @@ def cmd_gif(summary, cmds, in_file):
     if summary['Type'] == 'GIF':
         out_file = file_arg('gif')
 
-        to_replace['fps'] = summary['FPS']
-        to_replace['playback'] = summary['Playback']
+        to_replace['fps'] = str(min(float(summary['FPS']), float(get_fps(summary['Path']))))
+        to_replace['playback'] = str(1 / float(summary['Playback']))
         to_replace['width'] = '-1' if summary.get('Width') == None else summary['Width']
         to_replace['height'] = '-1' if summary.get('Height') == None else summary['Height']
 
@@ -264,7 +264,7 @@ def default_opts(summary):
         summary['Fade'] = constants["ffmpeg"]["def-fade"]
 
     if summary.get('FPS') == '':
-        summary['FPS'] = constants["ffmpeg"]["def-fps"]
+        summary['FPS'] = get_fps(summary['Path'])
 
     if summary.get('Playback') == '':
         summary['Playback'] = constants["ffmpeg"]["def-playback"]
@@ -273,9 +273,17 @@ def default_opts(summary):
         summary['Width'] = constants["ffmpeg"]["def-width"]
         summary['Height'] = None
 
+# Function: Empty temporary directory.
+def clean_tmp_dir():
+    for f in os.listdir(tmp_dir):
+        print(f)
+    input()
+
 # API: Options to commands.
 def options_to_cmds(summary):
     cmds = []
+
+    clean_tmp_dir()
 
     default_opts(summary)
 
