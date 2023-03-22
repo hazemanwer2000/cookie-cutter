@@ -48,5 +48,9 @@ constants = {
             "low" : 1000,
             "tiny" : 150
         }
+    },
+
+    "cmd" : {
+        "copy" : "copy"
     }
 }

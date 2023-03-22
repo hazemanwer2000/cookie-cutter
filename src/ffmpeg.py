@@ -251,7 +251,7 @@ def cmd_gif(summary, cmds, in_file):
 # Function: Finalize (with a 'cp' command).
 def finalize(summary, cmds, in_file):
     out_file = iter_name(summary['Path'], ext=extension(in_file), suffix=' - Cookie')
-    cmds.append('cp ' + quote(in_file) + ' ' + quote(out_file))
+    cmds.append(constants['cmd']['copy'] + ' ' + quote(in_file) + ' ' + quote(out_file))
 
 # Function: Set default options.
 def default_opts(summary):
