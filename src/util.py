@@ -90,6 +90,7 @@ def alter_name(f, ext=None, suffix=''):
     name += ('.' + ext) if ext != None else orig_ext
     return name
 
+# API: Create an enumarated (non-existing) file-name.
 def iter_name(f, ext=None, suffix=''):
     i = 1
 
