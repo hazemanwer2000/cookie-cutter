@@ -95,6 +95,12 @@ class MainWindow(QMainWindow):
     def key_skip_frame(self):
         self.playerWidget.next_frame()
 
+    def key_volume_lower(self):
+        self.playerWidget.adjust_volume(-1*constants['app']['volume-step'])
+
+    def key_volume_higher(self):
+        self.playerWidget.adjust_volume(constants['app']['volume-step'])
+
     def enterEvent(self, e):
         self.setFocus()
     

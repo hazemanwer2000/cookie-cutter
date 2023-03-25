@@ -39,7 +39,10 @@ constants = {
             "skip-tiny-forward" : Qt.Key.Key_BracketRight,
             "skip-tiny-backward" : Qt.Key.Key_BracketLeft,
             
-            "skip-frame" : Qt.Key.Key_Slash
+            "skip-frame" : Qt.Key.Key_Slash,
+
+            "volume-lower" : Qt.Key.Key_Down,
+            "volume-higher" : Qt.Key.Key_Up
         },
 
         "skip-ms" : {
@@ -47,7 +50,9 @@ constants = {
             "medium" : 3000,
             "low" : 1000,
             "tiny" : 150
-        }
+        },
+
+        "volume-step" : 10
     },
 
     "cmd" : {
