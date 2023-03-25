@@ -54,6 +54,12 @@ class MainWindow(QMainWindow):
             f.write('Damn, git!')
         raise KeyboardInterrupt()    # Note: To kill all threads.
     
+    def wheelEvent(self, e):
+        if e.angleDelta().y() > 0:
+            self.playerWidget.adjust_volume(constants['app']['volume-step']['wheel'])
+        else:
+            self.playerWidget.adjust_volume(-1*constants['app']['volume-step']['wheel'])
+
     def keyPressEvent(self, e):
         ekey = e.key()
         ekeys = constants["app"]["key"]
@@ -96,10 +102,10 @@ class MainWindow(QMainWindow):
         self.playerWidget.next_frame()
 
     def key_volume_lower(self):
-        self.playerWidget.adjust_volume(-1*constants['app']['volume-step'])
+        self.playerWidget.adjust_volume(-1*constants['app']['volume-step']['key'])
 
     def key_volume_higher(self):
-        self.playerWidget.adjust_volume(constants['app']['volume-step'])
+        self.playerWidget.adjust_volume(constants['app']['volume-step']['key'])
 
     def enterEvent(self, e):
         self.setFocus()

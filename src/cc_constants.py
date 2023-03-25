@@ -52,7 +52,10 @@ constants = {
             "tiny" : 150
         },
 
-        "volume-step" : 10
+        "volume-step" : {
+            "key" : 10,
+            "wheel" : 10
+        }
     },
 
     "cmd" : {
