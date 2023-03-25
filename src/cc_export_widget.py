@@ -117,6 +117,22 @@ class ExportWidget(QWidget):
                     "Fade" : OptionInputWidget({
                         "name" : "Fade",
                         "placeholder" : "(e.g: 1)"
+                    }),
+                    "Crop (W)" : OptionInputWidget({
+                        "name" : "Crop (W)",
+                        "placeholder" : "(i.e: %)"
+                    }),
+                    "Crop (H)" : OptionInputWidget({
+                        "name" : "Crop (H)",
+                        "placeholder" : "(i.e: %)"
+                    }),
+                    "Crop (X)" : OptionInputWidget({
+                        "name" : "Crop (X)",
+                        "placeholder" : "(i.e: %)"
+                    }),
+                    "Crop (Y)" : OptionInputWidget({
+                        "name" : "Crop (Y)",
+                        "placeholder" : "(i.e: %)"
                     })
                 }
             }

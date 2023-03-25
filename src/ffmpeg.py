@@ -4,7 +4,7 @@ from collections import OrderedDict
 from cc_assets import assets
 from cc_constants import constants
 from util_qt import asset_path
-from util import extension, video_length, iter_name, get_fps
+from util import extension, video_length, iter_name, get_fps, video_dimensions
 from pprint import pprint
 
 import os
@@ -48,9 +48,16 @@ templates_dict = {
     ]),
     "filter" : OrderedDict([
         ('0', "ffmpeg -i $$$input$$$ -crf $$$crf$$$"),
-        ('fade', "-vf fade=t=in:st=0:d=$$$fade-length$$$,fade=t=out:st=$$$fade-offset$$$:d=$$$fade-length$$$"),
-        ('afade', "-af afade=t=in:st=0:d=$$$fade-length$$$,afade=t=out:st=$$$fade-offset$$$:d=$$$fade-length$$$"),
+        ('vf', "-vf $$$vf$$$"),
+        ('af', "-af $$$af$$$"),
         ('1', "$$$output$$$")
+    ]),
+    "vf" : OrderedDict([
+        ('fade', 'fade=t=in:st=0:d=$$$fade-length$$$,fade=t=out:st=$$$fade-offset$$$:d=$$$fade-length$$$'),
+        ('crop', 'crop=$$$crop-width$$$:$$$crop-height$$$:$$$crop-x$$$:$$$crop-y$$$')
+    ]),
+    "af" : OrderedDict([
+        ('afade', 'afade=t=in:st=0:d=$$$fade-length$$$,afade=t=out:st=$$$fade-offset$$$:d=$$$fade-length$$$')
     ]),
     "gif" : OrderedDict([
         ('0', "ffmpeg -i $$$input$$$ -vf fps=$$$fps$$$,scale=$$$width$$$:$$$height$$$:flags=lanczos,setpts=$$$playback$$$*PTS[v] -loop 0 $$$output$$$")
@@ -81,17 +88,18 @@ def replace_into_cmd(cpy, dic):
     return cpy
 
 # API: Create command.
-def create_cmd(name, to_replace=None, to_delete=None):
+def create_cmd(name, to_replace=None, to_delete=None, sep=" "):
     # Note: Command dictionary.
     cmd_dic = templates_dict[name].copy()
 
     # Note: Remove unnecessary options.
     if to_delete != None:
         for name in to_delete:
-            cmd_dic.pop(name)
+            if cmd_dic.get(name) != None:
+                cmd_dic.pop(name)
 
     # Note: Command string.
-    cmd = " ".join(cmd_dic.values())
+    cmd = sep.join(cmd_dic.values())
 
     # Note: Replace arguments.
     if to_replace != None:
@@ -202,24 +210,49 @@ def cmd_mute(summary, cmds, in_file):
 
 # Function: Generate filter command.
 def cmd_filter(summary, cmds, in_file):
-    do_filter = False
-    to_del = []
+    to_del_filters = []
 
     # Note: Check whether to apply 'fade' filter.
     if summary['Fade'] == '0':
-        to_del += ['fade', 'afade']
-    else:
-        do_filter = True
-    
+        to_del_filters += ['fade', 'afade']
+
+    # Note: Check whether to apply 'crop' filter.
+    if summary['Crop (W)'] == '100' and summary['Crop (H)'] == '100':
+        to_del_filters += ['crop']
+
+    # Note: Get video dimensions.
+    vid_dim = video_dimensions(summary['Path'])
+
+    # Note: To-replace filters.
+    to_replace_filters = {
+        'fade-length' : summary['Fade'],
+        'fade-offset' : str(((estimate_length(summary) + constants["ffmpeg"]["tune-fade-offset"]) / 1000) - float(summary['Fade'])),
+        'crop-width' : str(int((float(summary['Crop (W)']) / 100) * float(vid_dim[0]))),
+        'crop-height' : str(int((float(summary['Crop (H)']) / 100) * float(vid_dim[1]))),
+        'crop-x' : str(int((float(summary['Crop (X)']) / 100) * float(vid_dim[0]))),
+        'crop-y' : str(int((float(summary['Crop (Y)']) / 100) * float(vid_dim[1]))),
+    }
+
+    # Note: Create filters.
+    vf = create_cmd('vf', to_replace_filters, to_del_filters, sep=',')
+    af = create_cmd('af', to_replace_filters, to_del_filters, sep=',')
+
+    # Note: Delete options.
+    to_del = []
+    if (vf == ''):
+        to_del.append('vf')
+    if (af == ''):
+        to_del.append('af')
+
     # Note: Check if any filters have been applied.
-    if do_filter:
+    if vf != '' or af != '':
         out_file = file_arg(extension(in_file))
         to_replace = {
-            'fade-length' : summary['Fade'],
-            'fade-offset' : str(((estimate_length(summary) + constants["ffmpeg"]["tune-fade-offset"]) / 1000) - float(summary['Fade'])),
             'input' : quote(in_file),
             'output' : quote(out_file),
-            'crf' : summary["CRF"] if summary.get('CRF') != None else constants["ffmpeg"]["def-crf"]
+            'crf' : summary["CRF"] if summary.get('CRF') != None else constants["ffmpeg"]["def-crf"],
+            'vf' : vf,
+            'af' : af
         }
         cmds.append(create_cmd('filter', to_replace, to_del))
     else:
@@ -273,6 +306,18 @@ def default_opts(summary):
     if summary.get('Width') == '' or summary.get('Height') == '':
         summary['Width'] = constants["ffmpeg"]["def-width"]
         summary['Height'] = None
+
+    if summary.get('Crop (W)') == '':
+        summary['Crop (W)'] = '100'
+
+    if summary.get('Crop (H)') == '':
+        summary['Crop (H)'] = '100'
+
+    if summary.get('Crop (X)') == '':
+        summary['Crop (X)'] = '0'
+
+    if summary.get('Crop (Y)') == '':
+        summary['Crop (Y)'] = '0'
 
 # API: Empty temporary directory.
 def clean_tmp_dir():
