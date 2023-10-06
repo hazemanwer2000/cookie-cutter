@@ -1,0 +1,12 @@
+
+QWidget { 
+    font-size: 10pt; 
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: italic; 
+    font-weight: bold; 
+}
+
+QLabel {
+    background-color: #d7d5d5;
+    border-radius: 5px;
+}

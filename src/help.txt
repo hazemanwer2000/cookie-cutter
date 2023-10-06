@@ -1,0 +1,7 @@
+
+Title:          Cookie Cutter.
+Description:    Cut a video, applying different filters and conversions on the end file.
+
+Options:
+    -h      Display documentation.
+    -i      Video file path.

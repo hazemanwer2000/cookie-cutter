@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\*\shell\Cookie-Cutter\command]
+	@="\"C:\\Users\\hazem\\AppData\\Local\\Programs\\Python\\Python311\\pythonw.exe\" C:\\cookie-cutter\\src\\app.py -i \"%V\""
+
+[HKEY_CLASSES_ROOT\*\shell\Cookie-Cutter]
+	"Icon"="C:\\cookie-cutter\\src\\assets\\icon.ico"
