@@ -1,0 +1,5 @@
+/applets/concat/__pycache__/*
+/applets/concat/tmp/*
+/src/__pycache__/*
+/src/tmp/*
+/bin/*
